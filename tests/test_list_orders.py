@@ -1,8 +1,10 @@
 import requests
 import responses
-import api_data
+
+from config.test_api_data import RESPONSE_TEXT
+from config.test_api_data import MOCK_RESPONSE
 import allure
-from config import URL,API
+from config.settings import URL,API
 
 @allure.suite('Яндекс Самокат. Получение списка заказов GET /api/v1/orders')
 class TestOrdersList:
@@ -23,7 +25,7 @@ class TestOrdersList:
             method=responses.GET,
             url=url,
             match_querystring=True,
-            json=api_data.MOCK_RESPONSE_FOR_COURIER_1,
+            json=MOCK_RESPONSE.MOCK_RESPONSE_FOR_COURIER_1,
             status=200
         )
         r = requests.get(f'{URL.MAIN_URL}{API.LIST_ORDERS}', params={"courierId": 1})
@@ -38,7 +40,7 @@ class TestOrdersList:
     def test_get_orders_list_failed(self):
         r = requests.get(f'{URL.MAIN_URL}{API.LIST_ORDERS}?courierId=9999999')
         assert r.status_code == 404
-        assert r.json()['message'] == 'Курьер с идентификатором 9999999 не найден'
+        assert r.json()['message'] == RESPONSE_TEXT.ORDERS_COURIER_NOT_FOUND
 
     @allure.title('Проверка получения списка заказов с учетом фильтрации по query nearestStation')
     def test_get_orders_list_success_with_query_nearest_station_1_or_2(self):
